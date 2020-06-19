@@ -25,10 +25,14 @@ func readSomething(conn *net.Conn) []byte {
 	buffer := make([]byte, 512)
 	for{
 		_, err := (*conn).Read(buffer)
-		if err != nil{
-			//连接出现问题或服务器关闭连接,退出.
-			panic(fmt.Sprintf("Read error: %s", err))
+		if isErrAPrint(err) {
+			//fmt.Println("aaaaaa")
+			return nil
 		}
+		//if err != nil{
+		//	//连接出现问题或服务器关闭连接,退出.
+		//	panic(fmt.Sprintf("Read error: %s", err))
+		//}
 		//这里处理服务器返回的服务数据
 		fmt.Println(buffer)
 	}
@@ -66,14 +70,17 @@ func checkLoginData(data []byte)(bool,error){
 	return false,ErrLoginData
 }
 
-func writeSomething(conn *net.Conn, data []byte) {
+func writeSomething(conn *net.Conn, data []byte) bool {
 	err := (*conn).SetWriteDeadline(time.Now().Add(5*time.Second))
 	isErrAPrint(err)
 	_, err = (*conn).Write(data)
 	if isErrAPrint(err) {
+		//fmt.Println("bbbbbbb")
+		return false
 		//连接出现问题,退出.
-		panic(fmt.Sprintf("Write error: %s", err))
+		//panic(fmt.Sprintf("Write error: %s", err))
 	}
+	return true
 }
 
 func isErrAPrint(err error) bool {

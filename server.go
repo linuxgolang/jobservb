@@ -44,9 +44,15 @@ func (server *Server)checkLogin(conn *net.Conn) bool {
 }
 
 func (server *Server) todoSomething(conn *net.Conn) {
-	go readSomething(conn)
-	for{
-		writeSomething(conn,[]byte("abc"))
-		time.Sleep(time.Second)
-	}
+
+	go func() {
+		for{
+			if !writeSomething(conn,[]byte("这是服务b")) {
+				return
+			}
+			time.Sleep(10*time.Second)
+		}
+	}()
+
+	readSomething(conn)
 }
